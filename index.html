@@ -20,6 +20,27 @@ body.light{color-scheme:light;--bg:#f4f7fa;--surface:#fff;--surface-2:#eef3f7;--
 @media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.content{padding:23px 20px}.topbar{padding:13px 20px}.cards,.vendor-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.bar-row{grid-template-columns:minmax(80px,125px) minmax(50px,1fr) 54px}}
 @media(max-width:760px){.app{display:block}.sidebar{position:relative;height:auto;padding:13px 13px 10px;border-right:0;border-bottom:1px solid var(--line);gap:11px}.brand{padding:0 5px}.nav-wrap{display:flex;gap:13px;overflow:auto}.nav-section{flex:0 0 auto}.nav-label{padding:4px 7px}.nav{display:flex;gap:4px}.nav button{white-space:nowrap;padding:8px 10px}.seller-nav button{padding-left:10px}.side-foot{display:none}.topbar{position:relative;min-height:62px;padding:12px 15px}.content{padding:19px 14px 32px}.page-heading h2{font-size:22px}.heading-chip{display:none}.grid-2{grid-template-columns:1fr}.filters{padding:11px}.filter-field{flex:1;min-width:130px}.filter-field.wide{min-width:100%}.filter-hint{margin-left:0}.cards{gap:9px}.kpi{padding:13px;min-height:91px}.kpi-value{font-size:21px}.table-head{align-items:flex-start}.vendor-cards{gap:8px}.bar-row{grid-template-columns:95px minmax(60px,1fr) 50px}.site-footer{display:block}.site-footer span{display:block;margin:4px 0}}
 @media(max-width:420px){.cards,.vendor-cards{grid-template-columns:1fr 1fr}.top-actions .theme-label{display:none}.top-left{min-width:0}.top-left h1{font-size:13px}.bar-row{grid-template-columns:78px minmax(40px,1fr) 46px;gap:7px}.bar-label{font-size:10px}}
+
+#printReport{display:none}
+ .aggregate-grid{grid-template-columns:minmax(0,1fr)}
+@media print{
+ @page{size:A4 landscape;margin:12mm}
+ body{background:#fff!important;color:#111!important;font-family:Arial,sans-serif!important}
+ .app,#toast{display:none!important}
+ #pdfReport{display:block!important;color:#111!important;font-size:9pt;line-height:1.35}
+ #pdfReport h1{font-size:18pt;margin:0 0 4pt}
+ #pdfReport .print-meta{color:#444;margin:0 0 10pt}
+ #pdfReport .print-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8pt;margin:8pt 0;padding:8pt;border:1px solid #9aa6ad;background:#f3f6f8!important}
+ #pdfReport .print-note{font-size:8pt;color:#444;margin:8pt 0}
+ #pdfReport table{width:100%;border-collapse:collapse;font-size:8pt}
+ #pdfReport thead{display:table-header-group}
+ #pdfReport tfoot{display:table-footer-group}
+ #pdfReport tr{break-inside:avoid;page-break-inside:avoid}
+ #pdfReport th,#pdfReport td{border:1px solid #aeb8be;padding:4pt 5pt;text-align:left;vertical-align:top;color:#111!important;background:#fff!important;opacity:1!important}
+ #pdfReport th{background:#e8eef2!important;color:#111!important}
+ #pdfReport tbody tr:nth-child(even) td{background:#f7f9fa!important}
+ #pdfReport .num{text-align:right;white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -33,16 +54,16 @@ body.light{color-scheme:light;--bg:#f4f7fa;--surface:#fff;--surface-2:#eef3f7;--
       </nav></div>
       <div class="nav-section"><div class="nav-label">Vendedores</div><nav class="nav seller-nav" id="sellerNav" aria-label="Páginas dos vendedores"></nav></div>
     </div>
-    <div class="side-foot">Relatório por quantidade<br>Caixas e unidades sempre separadas</div>
+    <div class="side-foot">Relatório por quantidade<br>Caixas convertidas; Cibelly e 5 L em unidades</div>
   </aside>
   <main>
     <header class="topbar">
       <div class="top-left"><div><h1 id="topTitle">Visão geral</h1><p id="topSubtitle">Todos os vendedores num só lugar</p></div></div>
-      <div class="top-actions"><button class="theme-btn" id="themeToggle" type="button" aria-label="Alternar modo claro e escuro">☼ <span class="theme-label">Modo claro</span></button></div>
+      <div class="top-actions"><button class="btn" id="pdfExport" type="button" aria-label="Exportar totais por produto em PDF">Exportar PDF</button><button class="theme-btn" id="themeToggle" type="button" aria-label="Alternar modo claro e escuro">☼ <span class="theme-label">Modo claro</span></button></div>
     </header>
     <div class="content">
       <section class="view active" id="view-overview">
-        <div class="page-heading"><div><div class="eyebrow">Relatório consolidado</div><h2>Visão geral</h2><p>Consulte o movimento de todos os vendedores. As caixas e unidades são somadas e comparadas separadamente.</p></div><div class="heading-chip">Dados do relatório PDF anexado</div></div>
+        <div class="page-heading"><div><div class="eyebrow">Relatório consolidado</div><h2>Visão geral</h2><p>As unidades de Eduardo, Fernando e Lopes são convertidas em caixas, excepto 5 L. Cibelly e os produtos de 5 L permanecem em unidades.</p></div><div class="heading-chip">Dados do relatório PDF anexado</div></div>
         <div class="filters" id="overviewFilters">
           <div class="filter-field"><label for="sellerFilter">Vendedor</label><select id="sellerFilter"><option value="Todos">Todos os vendedores</option></select></div>
           <div class="filter-field"><label for="typeFilter">Tipo de venda</label><select id="typeFilter"><option value="Todos">Caixas e unidades</option><option value="Caixas">Caixas</option><option value="Unidades">Unidades</option></select></div>
@@ -51,17 +72,17 @@ body.light{color-scheme:light;--bg:#f4f7fa;--surface:#fff;--surface-2:#eef3f7;--
           <div class="filter-hint" id="filterStatus" aria-live="polite"></div>
 	        </div>
 	        <div class="cards" id="overviewKpis"></div>
-        <div class="note">* Caixas equivalentes estimadas a partir das unidades: 80 ml = 24 un./caixa; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12. Produtos de 5 L e sem volumetria ficam fora do cálculo, pois não há fator de unidades por caixa definido para eles.</div>
+        <div class="note">* Caixas equivalentes estimadas a partir das unidades: 80 ml = 24 un./caixa; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12. Caixas mistas foram desdobradas em 6 unidades de cada produto antes da conversão. Fatores: 80 ml = 24 un./caixa; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12. Cibelly permanece em unidades; 5 L e produtos sem fator definido não são convertidos.</div>
 	        <div class="grid-2" id="overviewCharts"></div>
 	        <div class="grid-2 aggregate-grid">
 	          <div class="panel table-panel"><div class="table-head"><div><h3>Resumo por marca/família</h3><div class="panel-sub">Totais dos vendedores e produtos dentro dos filtros selecionados.</div></div></div><div class="table-wrap" id="familyTotals"></div></div>
-	          <div class="panel table-panel"><div class="table-head"><div><h3>Totais por produto</h3><div class="panel-sub">Produtos somados entre vendedores; caixas e unidades não são misturadas.</div></div></div><div class="table-wrap" id="productTotals"></div></div>
+
 	        </div>
 	        <div class="panel-head" style="margin:22px 2px 10px"><div><h3>Vendedores</h3><div class="panel-sub">Abra uma página individual ou mantenha “Todos os vendedores” para consultar o relatório completo.</div></div></div>
         <div class="vendor-cards" id="vendorCards"></div>
-        <div class="panel table-panel">
-          <div class="table-head"><div><h3>Todos os registos</h3><div class="panel-sub">Pesquisáveis, filtráveis e ordenáveis; sem preços ou valores.</div></div><div class="table-actions"><button class="btn export-btn" type="button">Exportar CSV</button></div></div>
-          <div class="table-wrap" id="overviewTable"></div>
+        <div class="panel table-panel product-totals-panel">
+          <div class="table-head"><div><h3>Totais por produto</h3><div class="panel-sub">Quantidades agregadas por produto e volumetria, conforme os filtros seleccionados.</div></div></div>
+          <div class="table-wrap" id="productTotals"></div>
         </div>
       </section>
       <section class="view" id="view-seller">
@@ -73,7 +94,7 @@ body.light{color-scheme:light;--bg:#f4f7fa;--surface:#fff;--surface-2:#eef3f7;--
           <div class="filter-hint" id="sellerFilterStatus"></div>
         </div>
         <div class="cards" id="sellerKpis"></div>
-        <div class="note">* Caixas equivalentes estimadas a partir das unidades: 80 ml = 24 un./caixa; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12. Produtos de 5 L e sem volumetria ficam fora do cálculo, pois não há fator de unidades por caixa definido para eles.</div>
+        <div class="note">* Caixas equivalentes estimadas a partir das unidades: 80 ml = 24 un./caixa; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12. Caixas mistas foram desdobradas em 6 unidades de cada produto antes da conversão. Fatores: 80 ml = 24 un./caixa; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12. Cibelly permanece em unidades; 5 L e produtos sem fator definido não são convertidos.</div>
         <div class="grid-2" id="sellerCharts"></div>
         <div class="panel table-panel">
           <div class="table-head"><div><h3>Produtos vendidos</h3><div class="panel-sub">A capacidade fica disponível como filtro mesmo quando o nome foi abreviado.</div></div><div class="table-actions"><button class="btn export-btn" type="button">Exportar CSV</button></div></div>
@@ -114,6 +135,16 @@ function volumeOf(r){return r.volume || 'Sem volumetria'}
 function uniqueProducts(rows){return [...new Set(rows.map(r=>r.product))].sort((a,b)=>a.localeCompare(b,'pt-BR'))}
 function fmt(n){return numberFmt.format(n||0)}
 function unitsPerBox(volume){return UNITS_PER_BOX[volume]||0}
+const MIXED_BOX_COMPONENTS = Object.freeze({
+ 'Caixa Mista Capterplus Ambientes/Kids 400 ml':['Capterplus Ambientes 400 ml','Capterplus Baby e Kids 400 ml'],
+ 'Caixa Mista Capterplus Auto/Anti Tabaco 400 ml':['Capterplus Auto 400 ml','Capterplus Anti Tabaco 400 ml'],
+ 'Caixa Mista Capterplus Banheiro/ Quarto e Closet 400 ml':['Capterplus Banheiro 400 ml','Capterplus Quarto e Closet 400 ml'],
+ 'Caixa Mista Capterplus Cozinha/ Lavanderia 400 ml':['Capterplus Cozinha 400 ml','Capterplus Lavanderia 400 ml'],
+ 'Caixa Mista Capterplus Neutro/Pet 400 ml':['Capterplus Neutro 400 ml','Capterplus Pet 400 ml']
+});
+const CASE_CONVERSION_SELLERS = new Set(['Eduardo','Fernando','Lopes']);
+function normalizeSalesData(){const rawTotals=new Map();const add=(map,row)=>{const volume=volumeOf(row),key=JSON.stringify([row.seller,row.product,volume,row.type]);const prior=map.get(key);if(prior)prior.quantity+=row.quantity;else map.set(key,{...row,volume})};for(const row of SALES_DATA){if(row.type==='Caixas'&&row.product.startsWith('Caixa Mista ')){const components=MIXED_BOX_COMPONENTS[row.product];if(!components)throw new Error('Composição não definida para '+row.product);for(const product of components)add(rawTotals,{seller:row.seller,type:'Unidades',product,volume:volumeOf(row),quantity:row.quantity*6});}else add(rawTotals,{...row})}const normalized=new Map();for(const row of rawTotals.values()){const converted={...row};const factor=unitsPerBox(volumeOf(converted));if(converted.type==='Unidades'&&CASE_CONVERSION_SELLERS.has(converted.seller)&&volumeOf(converted)!=='5 L'&&factor){converted.quantity/=factor;converted.type='Caixas'}const key=JSON.stringify([converted.seller,converted.product,volumeOf(converted),converted.type]);const prior=normalized.get(key);if(prior)prior.quantity+=converted.quantity;else normalized.set(key,converted)}SALES_DATA.splice(0,SALES_DATA.length,...normalized.values())}
+normalizeSalesData();
 function boxEquiv(row){const factor=unitsPerBox(volumeOf(row));return row.type==='Unidades'&&factor?row.quantity/factor:null}
 function equivalentBoxes(rows){return rows.reduce((total,row)=>total+(boxEquiv(row)??0),0)}
 function hasConvertibleUnits(rows){return rows.some(row=>boxEquiv(row)!==null)}
@@ -134,19 +165,19 @@ function card(label,value,note){return `<div class="kpi"><div class="kpi-label">
 function panelChart(title,subtitle,unit,rows){return `<div class="panel"><div class="panel-head"><div><h3>${esc(title)}</h3><div class="panel-sub">${esc(subtitle)}</div></div><span class="unit-pill">${esc(unit)}</span></div>${barsHtml(rows)}</div>`}
 function barsHtml(rows){if(!rows.length)return '<div class="empty-chart">Sem dados para os filtros selecionados.</div>';const max=Math.max(1,...rows.map(r=>Number(r.value)||0));return `<div class="bars">${rows.map(r=>`<div class="bar-row"><div class="bar-label" title="${esc(r.label)}">${esc(r.label)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(r.value>0?1:0,Math.min(100,(r.value/max)*100))}%"></div></div><div class="bar-value">${fmt(r.value)}</div></div>`).join('')}</div>`}
 function familyOf(product){const p=product.toLocaleLowerCase('pt-BR');for(const name of ['Capterpet','Capterplus','Arplus','Maxxplus','Gelplus','Jaxplus'])if(p.includes(name.toLocaleLowerCase('pt-BR')))return name;return 'Outros'}
-function aggregateProducts(rows){const map=new Map();for(const r of rows){const key=`${r.product}\u0000${volumeOf(r)}`;if(!map.has(key))map.set(key,{product:r.product,volume:volumeOf(r),boxes:0,units:0,eqBoxes:0,eqUnits:0,sellers:new Set()});const item=map.get(key);item[r.type==='Caixas'?'boxes':'units']+=r.quantity;if(r.type==='Unidades'){const factor=unitsPerBox(volumeOf(r));if(factor){item.eqBoxes+=r.quantity/factor;item.eqUnits+=r.quantity}}item.sellers.add(r.seller)}return [...map.values()].map(r=>({...r,sellers:r.sellers.size}))}
+function aggregateProducts(rows){const map=new Map();for(const r of rows){const key=`${r.product}\u0000${volumeOf(r)}`;if(!map.has(key))map.set(key,{product:r.product,volume:volumeOf(r),boxes:0,units:0});const item=map.get(key);item[r.type==='Caixas'?'boxes':'units']+=r.quantity}return [...map.values()]}
 function renderAggregates(rows){
  const showBoxes=state.type!=='Unidades',showUnits=state.type!=='Caixas';const familyMap=new Map();
  for(const r of rows){const family=familyOf(r.product);if(!familyMap.has(family))familyMap.set(family,{family,boxes:0,units:0,eqBoxes:0,eqUnits:0});const item=familyMap.get(family);if(r.type==='Caixas')item.boxes+=r.quantity;else{item.units+=r.quantity;const factor=unitsPerBox(volumeOf(r));if(factor){item.eqBoxes+=r.quantity/factor;item.eqUnits+=r.quantity}}}
  const families=[...familyMap.values()].sort((a,b)=>a.family.localeCompare(b.family,'pt-BR'));
- const familyHeaders=`<th>Marca/família</th>${showBoxes?'<th class="num">Caixas reais</th>':''}${showUnits?'<th class="num">Unidades</th><th class="num">Caixas equivalentes*</th>':''}`;
+ const familyHeaders=`<th>Marca/família</th>${showBoxes?'<th class="num">Caixas / equivalências</th>':''}${showUnits?'<th class="num">Unidades</th><th class="num">Caixas equivalentes*</th>':''}`;
  const familyBody=families.map(r=>`<tr><td><strong>${esc(r.family)}</strong></td>${showBoxes?`<td class="num">${fmt(r.boxes)}</td>`:''}${showUnits?`<td class="num">${fmt(r.units)}</td><td class="num">${r.eqUnits?fmtEq(r.eqBoxes):'—'}</td>`:''}</tr>`).join('');
  document.getElementById('familyTotals').innerHTML=`<table><thead><tr>${familyHeaders}</tr></thead><tbody>${familyBody||`<tr><td colspan="${1+Number(showBoxes)+2*Number(showUnits)}"><div class="empty-state">Nenhum produto corresponde aos filtros.</div></td></tr>`}</tbody></table>`;
  let products=aggregateProducts(rows);const key=state.aggregateSortKey,dir=state.aggregateSortDir;products.sort((a,b)=>{const av=a[key],bv=b[key];return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'pt-BR'))*dir});
  const pageSize=25,pages=Math.max(1,Math.ceil(products.length/pageSize));state.aggregatePage=Math.max(1,Math.min(state.aggregatePage,pages));const visible=products.slice((state.aggregatePage-1)*pageSize,state.aggregatePage*pageSize);
- const headers=[['product','Produto'],['volume','Volumetria'],...(showBoxes?[['boxes','Caixas reais']]:[]),...(showUnits?[['units','Unidades'],['eqBoxes','Caixas equivalentes*']]:[]),['sellers','Vendedores']];
+ const headers=[['product','Produto'],['volume','Volumetria'],...(showBoxes?[['boxes','Caixas / equivalências']]:[]),...(showUnits?[['units','Unidades']]:[])];
  const head=headers.map(([k,label])=>`<th class="${['boxes','units','eqBoxes','sellers'].includes(k)?'num':''}"><button data-aggregate-sort="${k}">${label}${key===k?(dir===1?' ↑':' ↓'):''}</button></th>`).join('');
- const body=visible.map(r=>`<tr><td>${esc(r.product)}</td><td>${esc(r.volume)}</td>${showBoxes?`<td class="num">${fmt(r.boxes)}</td>`:''}${showUnits?`<td class="num">${fmt(r.units)}</td><td class="num">${r.eqUnits?fmtEq(r.eqBoxes):'—'}</td>`:''}<td class="num">${fmt(r.sellers)}</td></tr>`).join('');
+ const body=visible.map(r=>`<tr><td>${esc(r.product)}</td><td>${esc(r.volume)}</td>${showBoxes?`<td class="num">${fmt(r.boxes)}</td>`:''}${showUnits?`<td class="num">${fmt(r.units)}</td>`:''}</tr>`).join('');
  document.getElementById('productTotals').innerHTML=`<table><thead><tr>${head}</tr></thead><tbody>${body||`<tr><td colspan="${headers.length}"><div class="empty-state">Nenhum produto corresponde aos filtros.</div></td></tr>`}</tbody></table><div class="table-foot"><span>${products.length?`A mostrar ${Math.min((state.aggregatePage-1)*pageSize+1,products.length)}–${Math.min(state.aggregatePage*pageSize,products.length)} de ${products.length} produtos`:'0 produtos'}</span><div class="pagination"><button data-aggregate-page="prev" ${state.aggregatePage<=1?'disabled':''}>Anterior</button><span>${state.aggregatePage} / ${pages}</span><button data-aggregate-page="next" ${state.aggregatePage>=pages?'disabled':''}>Seguinte</button></div></div>`;
  document.querySelectorAll('[data-aggregate-sort]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.aggregateSort;if(state.aggregateSortKey===k)state.aggregateSortDir*=-1;else{state.aggregateSortKey=k;state.aggregateSortDir=['boxes','units','eqBoxes','sellers'].includes(k)?-1:1}state.aggregatePage=1;render()}));
  document.querySelectorAll('[data-aggregate-page]').forEach(b=>b.addEventListener('click',()=>{if(b.disabled)return;state.aggregatePage+=b.dataset.aggregatePage==='next'?1:-1;render()}));
@@ -165,17 +196,17 @@ function renderTable(container,rows,kind){
 }
 function renderOverview(){
  const rows=allFiltered();const boxes=sum(rows,'Caixas'),units=sum(rows,'Unidades');const products=new Set(rows.map(r=>r.product)).size;const sellers=new Set(rows.map(r=>r.seller)).size;const eqNote=state.type==='Caixas'?'Sem vendas em unidades no filtro':hasConvertibleUnits(rows)?`≈ ${fmtEq(equivalentBoxes(rows))} caixas equivalentes*`:'Sem fator definido para as volumetrias do filtro';
- document.getElementById('overviewKpis').innerHTML=[card('Quantidade em caixas',fmt(boxes),'Soma das caixas reais'),card('Quantidade em unidades',fmt(units),eqNote),card('Produtos no filtro',fmt(products),'Nomes de produto distintos'),card('Vendedores no filtro',fmt(sellers),'Com registos visíveis')].join('');
+ document.getElementById('overviewKpis').innerHTML=[card('Quantidade em caixas',fmt(boxes),'Inclui caixas vendidas e unidades convertidas'),card('Quantidade em unidades',fmt(units),eqNote),card('Produtos no filtro',fmt(products),'Nomes de produto distintos'),card('Vendedores no filtro',fmt(sellers),'Com registos visíveis')].join('');
  const charts=document.getElementById('overviewCharts');let items=[];if(state.type!=='Unidades')items.push(panelChart('Caixas por vendedor','Comparação de caixas reais por vendedor','CAIXAS',bySeller(rows,'Caixas')));if(state.type!=='Caixas')items.push(panelChart('Unidades por vendedor','Quantidade em unidades por vendedor','UNIDADES',bySeller(rows,'Unidades')));charts.innerHTML=items.join('');
- document.getElementById('vendorCards').innerHTML=SELLERS.map(s=>{const sr=rows.filter(r=>r.seller===s);const eq=state.type==='Caixas'||!hasConvertibleUnits(sr)?'—':fmtEq(equivalentBoxes(sr));return `<article class="vendor-card" data-card-seller="${esc(s)}" tabindex="0" role="button" aria-label="Abrir vendedor ${esc(s)}"><h3>${esc(s)}</h3><div class="vendor-card-data"><span>Caixas reais</span><strong>${fmt(sum(sr,'Caixas'))}</strong></div><div class="vendor-card-data"><span>Unidades</span><strong>${fmt(sum(sr,'Unidades'))}</strong></div><div class="vendor-card-data"><span>Caixas equivalentes*</span><strong>${eq}</strong></div></article>`}).join('');
+ document.getElementById('vendorCards').innerHTML=SELLERS.map(s=>{const sr=rows.filter(r=>r.seller===s);const eq=state.type==='Caixas'||!hasConvertibleUnits(sr)?'—':fmtEq(equivalentBoxes(sr));return `<article class="vendor-card" data-card-seller="${esc(s)}" tabindex="0" role="button" aria-label="Abrir vendedor ${esc(s)}"><h3>${esc(s)}</h3><div class="vendor-card-data"><span>Caixas + equivalências</span><strong>${fmt(sum(sr,'Caixas'))}</strong></div><div class="vendor-card-data"><span>Unidades</span><strong>${fmt(sum(sr,'Unidades'))}</strong></div><div class="vendor-card-data"><span>Caixas equivalentes*</span><strong>${eq}</strong></div></article>`}).join('');
  document.getElementById('vendorCards').querySelectorAll('[data-card-seller]').forEach(c=>{c.addEventListener('click',()=>openSeller(c.dataset.cardSeller));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSeller(c.dataset.cardSeller)}})});
- renderAggregates(rows);renderTable(document.getElementById('overviewTable'),rows,'overview');document.getElementById('filterStatus').textContent=`${rows.length} registos`;
+ renderAggregates(rows);document.getElementById('filterStatus').textContent=`${rows.length} registos`;
 }
 	function topProducts(rows,type){return rows.filter(r=>r.type===type).sort((a,b)=>b.quantity-a.quantity).slice(0,8).map(r=>({label:r.product,value:r.quantity}))}
 	function renderSeller(){
- const rows=sellerFiltered();const boxes=sum(rows,'Caixas'),units=sum(rows,'Unidades');document.getElementById('sellerHeading').textContent=state.seller;document.getElementById('sellerDescription').textContent=`Quantidade por produto, separada entre caixas reais e unidades para ${state.seller}.`;
+ const rows=sellerFiltered();const boxes=sum(rows,'Caixas'),units=sum(rows,'Unidades');document.getElementById('sellerHeading').textContent=state.seller;document.getElementById('sellerDescription').textContent=state.seller==='Cibelly'?'As unidades de Cibelly permanecem em unidades; produtos de 5 L também permanecem em unidades.':'As unidades convertíveis deste vendedor foram transformadas em caixas; produtos de 5 L permanecem em unidades.';
  const eqNote=state.sellerType==='Caixas'?'Sem vendas em unidades no filtro':hasConvertibleUnits(rows)?`≈ ${fmtEq(equivalentBoxes(rows))} caixas equivalentes*`:'Sem fator definido para as volumetrias do filtro';
- document.getElementById('sellerLineCount').textContent=`${rows.length} registos`;document.getElementById('sellerKpis').innerHTML=[card('Quantidade em caixas reais',fmt(boxes),'Apenas as caixas vendidas'),card('Quantidade em unidades',fmt(units),eqNote),card('Produtos visíveis',fmt(new Set(rows.map(r=>r.product)).size),'Produtos distintos'),card('Vendedor',state.seller,'Dados deste vendedor')].join('');
+ document.getElementById('sellerLineCount').textContent=`${rows.length} registos`;document.getElementById('sellerKpis').innerHTML=[card('Quantidade em caixas',fmt(boxes),'Inclui caixas vendidas e unidades convertidas'),card('Quantidade em unidades',fmt(units),eqNote),card('Produtos visíveis',fmt(new Set(rows.map(r=>r.product)).size),'Produtos distintos'),card('Vendedor',state.seller,'Dados deste vendedor')].join('');
  let charts=[];if(state.sellerType!=='Unidades')charts.push(panelChart('Produtos — caixas','8 maiores quantidades no filtro','CAIXAS',topProducts(rows,'Caixas')));if(state.sellerType!=='Caixas')charts.push(panelChart('Produtos — unidades','8 maiores quantidades no filtro','UNIDADES',topProducts(rows,'Unidades')));document.getElementById('sellerCharts').innerHTML=charts.join('');
  renderTable(document.getElementById('sellerTable'),rows,'seller');document.getElementById('sellerFilterStatus').textContent=`${rows.length} registos`;
 }
@@ -193,16 +224,19 @@ function renderCompare(){
 function render(){document.getElementById('view-overview').classList.toggle('active',state.view==='overview');document.getElementById('view-seller').classList.toggle('active',state.view==='seller');document.getElementById('view-compare').classList.toggle('active',state.view==='compare');document.getElementById('topTitle').textContent=state.view==='overview'?'Visão geral':state.view==='seller'?state.seller:'Comparar vendedores';document.getElementById('topSubtitle').textContent=state.view==='overview'?'Todos os vendedores num só lugar':state.view==='seller'?'Página individual do vendedor':'Comparação de quantidades por produto';document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view));document.querySelectorAll('[data-seller]').forEach(b=>b.classList.toggle('active',state.view==='seller'&&b.dataset.seller===state.seller));if(state.view==='overview')renderOverview();if(state.view==='seller')renderSeller();if(state.view==='compare')renderCompare()}
 function openSeller(s){state.seller=s;state.view='seller';state.sellerPage=1;render();window.scrollTo({top:0,behavior:'smooth'})}
 function csvEscape(s){return '"'+String(s??'').replace(/"/g,'""')+'"'}
-function downloadCSV(rows,filename){const head=['Vendedor','Produto','Volumetria','Tipo','Quantidade','Caixas equivalentes estimadas'];const lines=[head,...rows.map(r=>[r.seller,r.product,volumeOf(r),r.type,r.quantity,boxEquiv(r)===null?'':fmtEq(boxEquiv(r))])].map(row=>row.map(csvEscape).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);showToast('CSV exportado com os filtros atuais.')}
+function reportFilterLabel(){if(state.view!=='seller'){const f=[];if(state.overviewSeller!=='Todos')f.push('Vendedor: '+state.overviewSeller);if(state.type!=='Todos')f.push('Tipo: '+TYPE_LABEL[state.type]);if(state.volume!=='Todos')f.push('Volumetria: '+state.volume);if(state.search)f.push('Produto: '+state.search);return f.length?f.join(' | '):'Sem filtros aplicados'}const f=['Vendedor: '+state.seller];if(state.sellerType!=='Todos')f.push('Tipo: '+TYPE_LABEL[state.sellerType]);if(state.sellerVolume!=='Todos')f.push('Volumetria: '+state.sellerVolume);if(state.sellerSearch)f.push('Produto: '+state.sellerSearch);return f.join(' | ')}
+function printCurrentReport(){const sellerView=state.view==='seller',rows=sellerView?sellerFiltered():allFiltered(),kindFilter=sellerView?state.sellerType:state.type,showBoxes=kindFilter!=='Unidades',showUnits=kindFilter!=='Caixas';const products=aggregateProducts(rows),key=state.aggregateSortKey,dir=state.aggregateSortDir;products.sort((a,b)=>{const av=a[key],bv=b[key];return (typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'pt-BR'))*dir});const title=sellerView?`Totais por produto — ${state.seller}`:'Totais por produto';const headers=['Produto','Volumetria',...(showBoxes?['Caixas / equivalências']:[]),...(showUnits?['Unidades']:[])];const thead=headers.map(h=>`<th>${esc(h)}</th>`).join('');const body=products.length?products.map(r=>`<tr><td>${esc(r.product)}</td><td>${esc(r.volume)}</td>${showBoxes?`<td class="num">${fmt(r.boxes)}</td>`:''}${showUnits?`<td class="num">${fmt(r.units)}</td>`:''}</tr>`).join(''):`<tr><td colspan="${headers.length}">Nenhum produto corresponde aos filtros seleccionados.</td></tr>`;const report=document.getElementById('pdfReport');report.innerHTML=`<h1>${esc(title)}</h1><p class="print-meta">${esc(reportFilterLabel())} · ${products.length} produtos · Gerado em ${new Date().toLocaleString('pt-PT')}</p><div class="print-summary"><div><strong>Caixas (vendidas + convertidas):</strong> ${fmt(sum(rows,'Caixas'))}</div><div><strong>Unidades mantidas:</strong> ${fmt(sum(rows,'Unidades'))}</div><div><strong>Equivalência estimada das unidades:</strong> ${hasConvertibleUnits(rows)?fmtEq(equivalentBoxes(rows)):'—'}</div></div><p class="print-note">As unidades convertíveis de Eduardo, Fernando e Lopes são apresentadas em caixas. Caixas mistas foram desdobradas em 6 unidades de cada produto antes da conversão. Cibelly e produtos de 5 L permanecem em unidades. Factores: 80 ml = 24; 200 ml = 15; 400 ml, 500 ml e 1 kg = 12 unidades por caixa.</p><table><thead><tr>${thead}</tr></thead><tbody>${body}</tbody></table>`;report.setAttribute('aria-hidden','false');window.print();report.setAttribute('aria-hidden','true')}
+function downloadCSV(rows,filename){const head=['Vendedor','Produto','Volumetria','Tipo','Quantidade','Caixas equivalentes estimadas'];const lines=[head,...rows.map(r=>[r.seller,r.product,volumeOf(r),r.type,fmt(r.quantity),boxEquiv(r)===null?'':fmtEq(boxEquiv(r))])].map(row=>row.map(csvEscape).join(';'));const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);showToast('CSV exportado com os filtros atuais.')}
 let toastTimer;function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2400)}
 function init(){populateFilters();document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{state.view=b.dataset.view;state.page=1;render()}));
  document.getElementById('sellerFilter').addEventListener('change',e=>{state.overviewSeller=e.target.value;state.page=1;render()});document.getElementById('typeFilter').addEventListener('change',e=>{state.type=e.target.value;state.page=1;render()});document.getElementById('volumeFilter').addEventListener('change',e=>{state.volume=e.target.value;state.page=1;render()});document.getElementById('searchFilter').addEventListener('input',e=>{state.search=e.target.value.trim();state.page=1;render()});
  document.getElementById('sellerTypeFilter').addEventListener('change',e=>{state.sellerType=e.target.value;state.sellerPage=1;render()});document.getElementById('sellerVolumeFilter').addEventListener('change',e=>{state.sellerVolume=e.target.value;state.sellerPage=1;render()});document.getElementById('sellerSearch').addEventListener('input',e=>{state.sellerSearch=e.target.value.trim();state.sellerPage=1;render()});
  document.getElementById('compareType').addEventListener('change',e=>{state.compareType=e.target.value;render()});document.getElementById('compareVolume').addEventListener('change',e=>{state.compareVolume=e.target.value;state.compareProduct='';render()});document.getElementById('compareProduct').addEventListener('change',e=>{state.compareProduct=e.target.value;render()});
- document.querySelectorAll('.export-btn').forEach(b=>b.addEventListener('click',()=>downloadCSV(state.view==='overview'?allFiltered():sellerFiltered(),state.view==='overview'?'vendas_filtradas.csv':`vendas_${state.seller.toLowerCase()}.csv`)));document.getElementById('compareCsv').addEventListener('click',()=>{if(!state.compareProduct){showToast('Escolha um produto primeiro.');return}const ts=state.compareType==='Todos'?['Caixas','Unidades']:[state.compareType];downloadCSV(ts.flatMap(t=>comparisonRows(t)).filter(r=>r.quantity>0),`comparacao_${state.compareProduct.replace(/[^\p{L}\p{N}]+/gu,'_').toLowerCase()}.csv`)});
+ document.querySelectorAll('.export-btn').forEach(b=>b.addEventListener('click',()=>downloadCSV(state.view==='overview'?allFiltered():sellerFiltered(),state.view==='overview'?'vendas_filtradas.csv':`vendas_${state.seller.toLowerCase()}.csv`)));document.getElementById('pdfExport').addEventListener('click',printCurrentReport);document.getElementById('compareCsv').addEventListener('click',()=>{if(!state.compareProduct){showToast('Escolha um produto primeiro.');return}const ts=state.compareType==='Todos'?['Caixas','Unidades']:[state.compareType];downloadCSV(ts.flatMap(t=>comparisonRows(t)).filter(r=>r.quantity>0),`comparacao_${state.compareProduct.replace(/[^\p{L}\p{N}]+/gu,'_').toLowerCase()}.csv`)});
  document.getElementById('themeToggle').addEventListener('click',()=>{state.theme=state.theme==='dark'?'light':'dark';document.body.classList.toggle('light',state.theme==='light');document.querySelector('#themeToggle .theme-label').textContent=state.theme==='dark'?'Modo claro':'Modo escuro';try{localStorage.setItem('salesTheme',state.theme)}catch(e){}});try{if(localStorage.getItem('salesTheme')==='light'){state.theme='light';document.body.classList.add('light');document.querySelector('#themeToggle .theme-label').textContent='Modo escuro'}}catch(e){}
  render();}
 init();
 </script>
+<section id="pdfReport" aria-hidden="true"></section>
 </body>
 </html>
