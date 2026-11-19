@@ -49,9 +49,8 @@ body.light{color-scheme:light;--bg:#f4f7fa;--surface:#fff;--surface-2:#eef3f7;--
           <div class="filter-field"><label for="volumeFilter">Volumetria</label><select id="volumeFilter"><option value="Todos">Todas as volumetrias</option></select></div>
           <div class="filter-field wide"><label for="searchFilter">Produto</label><input id="searchFilter" type="search" placeholder="Pesquisar produto…" autocomplete="off"></div>
           <div class="filter-hint" id="filterStatus" aria-live="polite"></div>
-        </div>
-        <div class="cards" id="overviewKpis"></div>
-	        <div class="audit" id="cibellyAudit"><div class="audit-icon">!</div><div><strong>Nota de conferência do PDF:</strong> as linhas de produtos de Cibelly somam <span id="cibellyLineTotal"></span> unidades, enquanto o documento imprime um total geral de 1.075,55. O painel apresenta as quantidades discriminadas por produto e não ajusta os dados.</div></div>
+	        </div>
+	        <div class="cards" id="overviewKpis"></div>
 	        <div class="grid-2" id="overviewCharts"></div>
 	        <div class="grid-2 aggregate-grid">
 	          <div class="panel table-panel"><div class="table-head"><div><h3>Resumo por marca/família</h3><div class="panel-sub">Totais dos vendedores e produtos dentro dos filtros selecionados.</div></div></div><div class="table-wrap" id="familyTotals"></div></div>
@@ -157,15 +156,14 @@ function renderTable(container,rows,kind){
 }
 function renderOverview(){
  const rows=allFiltered();const boxes=sum(rows,'Caixas'),units=sum(rows,'Unidades');const products=new Set(rows.map(r=>r.product)).size;const sellers=new Set(rows.map(r=>r.seller)).size;
- document.getElementById('overviewKpis').innerHTML=[card('Quantidade em caixas',fmt(boxes),'Soma das quantidades listadas'),card('Quantidade em unidades',fmt(units),'Soma das quantidades listadas'),card('Produtos no filtro',fmt(products),'Nomes de produto distintos'),card('Vendedores no filtro',fmt(sellers),'Com registos visíveis')].join('');
- const charts=document.getElementById('overviewCharts');let items=[];if(state.type!=='Unidades')items.push(panelChart('Caixas por vendedor','Comparação de caixas por vendedor','CAIXAS',bySeller(rows,'Caixas')));if(state.type!=='Caixas')items.push(panelChart('Unidades por vendedor','Comparação de unidades por vendedor','UNIDADES',bySeller(rows,'Unidades')));charts.innerHTML=items.join('');
- document.getElementById('vendorCards').innerHTML=SELLERS.map(s=>{const sr=rows.filter(r=>r.seller===s);return `<article class="vendor-card" data-card-seller="${esc(s)}" tabindex="0" role="button" aria-label="Abrir vendedor ${esc(s)}"><h3>${esc(s)}</h3><div class="vendor-card-data"><span>Caixas</span><strong>${fmt(sum(sr,'Caixas'))}</strong></div><div class="vendor-card-data"><span>Unidades</span><strong>${fmt(sum(sr,'Unidades'))}</strong></div></article>`}).join('');
- document.getElementById('vendorCards').querySelectorAll('[data-card-seller]').forEach(c=>{c.addEventListener('click',()=>openSeller(c.dataset.cardSeller));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSeller(c.dataset.cardSeller)}})});
-	 renderAggregates(rows);renderTable(document.getElementById('overviewTable'),rows,'overview');document.getElementById('filterStatus').textContent=`${rows.length} registos`;document.getElementById('cibellyLineTotal').textContent=fmt(sum(SALES_DATA.filter(r=>r.seller==='Cibelly'),'Unidades'));
- document.getElementById('cibellyAudit').style.display=(state.overviewSeller==='Todos'||state.overviewSeller==='Cibelly')&&state.type!=='Caixas'&&(state.volume==='Todos'||state.volume==='Sem volumetria'||state.volume==='80 ml'||state.volume==='200 ml'||state.volume==='400 ml'||state.volume==='500 ml'||state.volume==='1 kg'||state.volume==='5 L')?'flex':'none';
-}
-function topProducts(rows,type){return rows.filter(r=>r.type===type).sort((a,b)=>b.quantity-a.quantity).slice(0,8).map(r=>({label:r.product,value:r.quantity}))}
-function renderSeller(){
+	 document.getElementById('overviewKpis').innerHTML=[card('Quantidade em caixas',fmt(boxes),'Soma das quantidades listadas'),card('Quantidade em unidades',fmt(units),'Soma das quantidades listadas'),card('Produtos no filtro',fmt(products),'Nomes de produto distintos'),card('Vendedores no filtro',fmt(sellers),'Com registos visíveis')].join('');
+	 const charts=document.getElementById('overviewCharts');let items=[];if(state.type!=='Unidades')items.push(panelChart('Caixas por vendedor','Comparação de caixas por vendedor','CAIXAS',bySeller(rows,'Caixas')));if(state.type!=='Caixas')items.push(panelChart('Unidades por vendedor','Comparação de unidades por vendedor','UNIDADES',bySeller(rows,'Unidades')));charts.innerHTML=items.join('');
+	 document.getElementById('vendorCards').innerHTML=SELLERS.map(s=>{const sr=rows.filter(r=>r.seller===s);return `<article class="vendor-card" data-card-seller="${esc(s)}" tabindex="0" role="button" aria-label="Abrir vendedor ${esc(s)}"><h3>${esc(s)}</h3><div class="vendor-card-data"><span>Caixas</span><strong>${fmt(sum(sr,'Caixas'))}</strong></div><div class="vendor-card-data"><span>Unidades</span><strong>${fmt(sum(sr,'Unidades'))}</strong></div></article>`}).join('');
+	 document.getElementById('vendorCards').querySelectorAll('[data-card-seller]').forEach(c=>{c.addEventListener('click',()=>openSeller(c.dataset.cardSeller));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSeller(c.dataset.cardSeller)}})});
+		 renderAggregates(rows);renderTable(document.getElementById('overviewTable'),rows,'overview');document.getElementById('filterStatus').textContent=`${rows.length} registos`;
+	}
+	function topProducts(rows,type){return rows.filter(r=>r.type===type).sort((a,b)=>b.quantity-a.quantity).slice(0,8).map(r=>({label:r.product,value:r.quantity}))}
+	function renderSeller(){
  const rows=sellerFiltered();const boxes=sum(rows,'Caixas'),units=sum(rows,'Unidades');document.getElementById('sellerHeading').textContent=state.seller;document.getElementById('sellerDescription').textContent=`Quantidade por produto, separada entre caixas e unidades para ${state.seller}.`;
  document.getElementById('sellerLineCount').textContent=`${rows.length} registos`;document.getElementById('sellerKpis').innerHTML=[card('Quantidade em caixas',fmt(boxes),'Apenas os produtos filtrados'),card('Quantidade em unidades',fmt(units),'Apenas os produtos filtrados'),card('Produtos visíveis',fmt(new Set(rows.map(r=>r.product)).size),'Produtos distintos'),card('Vendedor',state.seller,'Dados deste vendedor')].join('');
  let charts=[];if(state.sellerType!=='Unidades')charts.push(panelChart('Produtos — caixas','8 maiores quantidades no filtro','CAIXAS',topProducts(rows,'Caixas')));if(state.sellerType!=='Caixas')charts.push(panelChart('Produtos — unidades','8 maiores quantidades no filtro','UNIDADES',topProducts(rows,'Unidades')));document.getElementById('sellerCharts').innerHTML=charts.join('');
